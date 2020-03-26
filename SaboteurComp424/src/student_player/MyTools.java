@@ -3,6 +3,7 @@ package student_player;
 import java.util.ArrayList;
 
 import Saboteur.SaboteurMove;
+import java.lang.Math;
 
 public class MyTools {
     public static double getSomething() {
@@ -26,5 +27,15 @@ public class MyTools {
     	return returnVal;
     }
     
+    /**
+     * @param move = an instance of SaboteurMove
+     * @param objective = the coordinates of the objective
+     * @return the sum of delta x and y
+     */
+    public static int calculatePathLength(SaboteurMove move, int[] objective){
+    	int[] val = move.getPosPlayed().clone();
+    	int retVal = Math.abs(val[0] - objective[0]) +  Math.abs(val[1] - objective[1]);
+    	return retVal;
+    }
     
 }
