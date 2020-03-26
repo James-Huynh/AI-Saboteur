@@ -37,12 +37,12 @@ public class SaboteurBoardPanel extends BoardPanel implements MouseListener, Mou
             try {
                 URL url = getClass().getResource("tiles");
                 String basePath = ((URL) url).getPath();
-                this.img= ImageIO.read(new File(basePath + "//" + name + ".png"));
+                this.img= ImageIO.read(new File(basePath + "/" + name + ".png"));
             }catch (IOException ie){
                 System.out.println("problem loading images, at");
                 URL url = getClass().getResource("tiles");
                 String basePath = ((URL) url).getPath();
-                System.out.println(basePath + "\\" + name + ".png");
+                System.out.println(basePath + "/" + name + ".png");
             }
             this.Height = img.getHeight();
             this.Width = img.getWidth();
@@ -96,7 +96,7 @@ public class SaboteurBoardPanel extends BoardPanel implements MouseListener, Mou
         try{
             URL url = getClass().getResource("tiles");
             String basePath = ((URL) url).getPath();
-            this.background = ImageIO.read(new File(basePath + "//backgroundSmall.png"));
+            this.background = ImageIO.read(new File(basePath + "/backgroundSmall.png"));
         }catch (IOException ie){
             System.out.println("problem loading background image");
         }
