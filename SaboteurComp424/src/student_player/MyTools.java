@@ -14,38 +14,49 @@ public class MyTools {
     }
     
     
+    // James
     /**
-     * This methods focuses on finding a good move for the initial phase of the game.
-     * @param boardState the boardState of the current turn
+     * This method focuses on finding a good move for the initial phase of the game.
+     * @param boardState is the boardState of the current turn
      * @return a move
      */
     public static Move getInitialGameMove(SaboteurBoardState boardState) {	
     	ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
     			
-    	int[] chosenObj = targetObjective(boardState); // returns the x,y coordinate of the chosen objective
+    	int[] chosenObj = targetObjective(boardState);
     	Move chosenMove = pickTheBestHeuristics(ArrLegalMoves, chosenObj);
     	return chosenMove;
     }
     
     
+ 	// James
     /**
      * Given a collection of moves, the methods picks the best move according a heuristic based approach. 
      * In this case, the heuristic is the length of a path to an objective.
-     * @param arrLegalMoves an array containing all legal moves from the current player
-     * @param coordObj the coordinate in an array format of an objective
+     * @param arrLegalMoves is an array containing all legal moves from the current player
+     * @param coordObj is the coordinates in an array format of an objective
      * @return a move according to a heuristic
      */
     private static Move pickTheBestHeuristics(ArrayList<SaboteurMove> arrLegalMoves, int[] coordObj) {
-    	//ArrayList<SaboteurMove> pathMove = getPathMoves(arrLegalMoves);
+    	ArrayList<SaboteurMove> pathMoves = getPathMoves(arrLegalMoves);
+    	SaboteurMove bestMove = pathMoves.get(0);
     	
-    	return arrLegalMoves.get(0);	// Placeholder
+    	// curate the move with the best heuristic
+    	for (SaboteurMove curMove : pathMoves) {
+    		if (calculatePathLength(curMove, coordObj) < calculatePathLength(bestMove, coordObj)) {
+    			bestMove = curMove;
+    		}
+    	}
+    	
+    	return bestMove;
     }
     
     
+    // James
     /**
      * This methods chooses which objective an AI should prioritize. 
      * The choice is determined by which objective is revealed, and if the gold nugget is revealed.
-     * @param boardState the boardState of the current turn
+     * @param boardState is the boardState of the current turn
      * @return the coordinates of the chosen objective in [x,y] format
      */
     private static int[] targetObjective(SaboteurBoardState boardState) {
@@ -53,20 +64,21 @@ public class MyTools {
     	//Case 2: golden nugget is revealed
     	//Case 3: one of the objectives is a bust
     	int i = 0;
+       	SaboteurTile[][] hiddenBoard = boardState.getHiddenBoard();
     	int[][] coordObjs= boardState.hiddenPos;
-    	SaboteurTile[][] hiddenBoard = boardState.getHiddenBoard();
     	int[] coordObj1 = {coordObjs[0][0], coordObjs[1][0]};
     	int[] coordObj2 = {coordObjs[0][1], coordObjs[1][1]};
     	int[] coordObj3 = {coordObjs[0][2], coordObjs[1][2]};
     	SaboteurTile[] objectives = {hiddenBoard[coordObj1[0]][coordObj1[1]], 
     			hiddenBoard[coordObj2[0]][coordObj2[1]], 
     			hiddenBoard[coordObj3[0]][coordObj3[1]]};
-    	ArrayList<SaboteurTile> goodObjs = new ArrayList<SaboteurTile>();
+    	ArrayList<int[]> potentialCoord = new ArrayList<int[]>();
+    	int[] bestCoord = new int[2];
 
     	// check for the nugget
     	for (SaboteurTile tile: objectives) {
     		if (isNugget(tile)) {
-    			return new int[] {coordObjs[0][i], coordObjs[1][i]};
+    			return (new int[] {coordObjs[0][i], coordObjs[1][i]});
     		}
     		i++;
     	}
@@ -75,15 +87,30 @@ public class MyTools {
     	i = 0;
     	for (SaboteurTile tile: objectives) {
     		if (!isRevealed(tile)) {
-    			goodObjs.add(tile);	
+    			potentialCoord.add(new int[] {coordObjs[0][i], coordObjs[1][i]});	
     		}
     		i++;
     	}
-    	
-
-    	return null; // @James
+    	 	
+    	// pick the best objective out of the remaining ones
+    	bestCoord = pickRemainingObj(potentialCoord);
+     	return bestCoord;
     }
     
+    
+    // James
+    /**
+     * based on an arbitrary condition, pick the best objective
+     * @param potentialCoord are the coordinates of the remaining hidden objectives
+     * @return coordinates of the best objective
+     */
+    private static int[] pickRemainingObj(ArrayList<int[]> potentialCoord) {
+    	// can be modified for improvement
+		return potentialCoord.get(0);
+	}
+
+
+	// James
     /**
      * check if the tile is a nugget (also revealed)
      * @param tile
@@ -99,6 +126,8 @@ public class MyTools {
     	}
     }
     
+    
+    // James
     /**
      * check if the tile is revealed (may or not be a nugget)
      * @param tile
@@ -130,6 +159,7 @@ public class MyTools {
     	}
     	return returnVal;
     }
+    
     
     /**
      * @param move = an instance of SaboteurMove
