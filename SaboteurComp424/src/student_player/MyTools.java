@@ -157,6 +157,7 @@ public class MyTools {
     			returnVal.add(moves.get(i));
     		}
     	}
+    	
     	return returnVal;
     }
     
