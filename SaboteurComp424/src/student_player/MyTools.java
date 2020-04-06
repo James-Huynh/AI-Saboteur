@@ -4,15 +4,12 @@ import java.util.ArrayList;
 
 import Saboteur.SaboteurBoardState;
 import Saboteur.SaboteurMove;
+import Saboteur.cardClasses.SaboteurCard;
 import Saboteur.cardClasses.SaboteurTile;
 import boardgame.Move;
 import java.lang.Math;
 
 public class MyTools {
-    public static double getSomething() {
-        return Math.random();
-    }
-    
     
     // James
     /**
@@ -21,10 +18,15 @@ public class MyTools {
      * @return a move
      */
     public static Move getInitialGameMove(SaboteurBoardState boardState) {	
-    	ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
-    			
+    	ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();	
     	int[] chosenObj = targetObjective(boardState);
     	Move chosenMove = pickTheBestHeuristics(ArrLegalMoves, chosenObj);
+    	
+    	if (chosenMove == null) {
+    		// What do we do?
+    		chosenMove = boardState.getRandomMove();
+    	}
+    	
     	return chosenMove;
     }
     
@@ -38,20 +40,33 @@ public class MyTools {
      * @return a move according to a heuristic
      */
     private static Move pickTheBestHeuristics(ArrayList<SaboteurMove> arrLegalMoves, int[] coordObj) {
-    	ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(arrLegalMoves));
-    	//checking if the pathMoves is empty
+    	ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(arrLegalMoves)); //checking if the pathMoves is empty
+    	int curPathLength = 0;
+    	
     	if(pathMoves.size()>0) {
     		SaboteurMove bestMove = pathMoves.get(0);
         	
         	// curate the move with the best heuristic
         	for (SaboteurMove curMove : pathMoves) {
-        		if (calculatePathLength(curMove, coordObj) < calculatePathLength(bestMove, coordObj)) {
+        		
+        		// check for a winning move
+        		curPathLength = calculatePathLength(curMove, coordObj);
+        		if (curPathLength == 1) {
+        			if (isWinningMove(curMove, coordObj)) {
+        				System.out.println("winning move returned");
+        				return curMove;
+        			}
+        		}
+        		
+        		// compare the current move and the best move so far
+        		if (curPathLength < calculatePathLength(bestMove, coordObj)) {
         			bestMove = curMove;
         		}
         	}
-        	
+   
         	return bestMove;
     	}
+    	
     	return null;
     }
     
@@ -69,10 +84,10 @@ public class MyTools {
     	//Case 3: one of the objectives is a bust
     	int i = 0;
        	SaboteurTile[][] hiddenBoard = boardState.getHiddenBoard();
-    	int[][] coordObjs= boardState.hiddenPos;
-    	int[] coordObj1 = {coordObjs[0][0], coordObjs[1][0]};
-    	int[] coordObj2 = {coordObjs[0][1], coordObjs[1][1]};
-    	int[] coordObj3 = {coordObjs[0][2], coordObjs[1][2]};
+    	int[][] coordObjs= SaboteurBoardState.hiddenPos.clone();
+    	int[] coordObj1 = {coordObjs[0][0], coordObjs[0][1]};
+    	int[] coordObj2 = {coordObjs[1][0], coordObjs[1][1]};
+    	int[] coordObj3 = {coordObjs[2][0], coordObjs[2][1]};
     	SaboteurTile[] objectives = {hiddenBoard[coordObj1[0]][coordObj1[1]], 
     			hiddenBoard[coordObj2[0]][coordObj2[1]], 
     			hiddenBoard[coordObj3[0]][coordObj3[1]]};
@@ -91,7 +106,7 @@ public class MyTools {
     	i = 0;
     	for (SaboteurTile tile: objectives) {
     		if (!isRevealed(tile)) {
-    			potentialCoord.add(new int[] {coordObjs[0][i], coordObjs[1][i]});	
+    			potentialCoord.add(new int[] {coordObjs[i][0], coordObjs[i][1]});	
     		}
     		i++;
     	}
@@ -174,6 +189,7 @@ public class MyTools {
     public static int calculatePathLength(SaboteurMove move, int[] objective){
     	int[] val = move.getPosPlayed().clone();
     	int retVal = Math.abs(val[0] - objective[0]) +  Math.abs(val[1] - objective[1]);
+    	
     	return retVal;
     }
     
@@ -205,4 +221,64 @@ public class MyTools {
     	}
     	return returnVal;
     }
+    
+    
+    // James
+    /**
+     * Verify if the given move creates a valid path to the specified coordinates 
+     * @param move a move
+     * @param coordinates the coordinates of a nugget (assumed)
+     * @return a boolean
+     */
+    private static boolean isWinningMove(SaboteurMove move, int[] coordinates) {
+    	SaboteurTile cardPlayed = (SaboteurTile) move.getCardPlayed();	// no choice to type cast
+    	int[] posPlayed = move.getPosPlayed();
+    	int[] targetPos = coordinates;
+    	int[][] cardPath = cardPlayed.getPath();
+    	char c = '0';
+    	
+    	if (posPlayed[0] < targetPos[0]) { c = 'n'; }	// north
+    	if (posPlayed[0] > targetPos[0]) { c = 's'; }	// south
+    	if (posPlayed[1] < targetPos[1]) { c = 'w'; }	// west
+    	if (posPlayed[1] > targetPos[1]) { c = 'e'; }	// east
+
+    	switch (c) {
+    	
+    	case 'n': 
+    	if (cardPath[1][0] == 1 && cardPath[1][1] == 1) { 
+    		return true;
+    	} else {
+    		return false;
+    	}
+    		
+    	case 's':
+    		if (cardPath[1][2] == 1 && cardPath[1][1] == 1) { 
+        		return true;
+        	} else {
+        		return false;
+        	}
+    		
+    	case 'w':
+    		if (cardPath[2][1] == 1 && cardPath[1][1] == 1) { 
+        		return true;
+        	} else {
+        		return false;
+        	}
+    		
+    	case 'e':
+    		if (cardPath[0][1] == 1 && cardPath[1][1] == 1) { 
+        		return true;
+        	} else {
+        		return false;
+        	}
+    	}
+    	
+    	
+    	System.out.println("error: winning case wrong");
+    	return false;
+    }
+    
+    
+    
+    
 }
