@@ -38,17 +38,21 @@ public class MyTools {
      * @return a move according to a heuristic
      */
     private static Move pickTheBestHeuristics(ArrayList<SaboteurMove> arrLegalMoves, int[] coordObj) {
-    	ArrayList<SaboteurMove> pathMoves = getPathMoves(arrLegalMoves);
-    	SaboteurMove bestMove = pathMoves.get(0);
-    	
-    	// curate the move with the best heuristic
-    	for (SaboteurMove curMove : pathMoves) {
-    		if (calculatePathLength(curMove, coordObj) < calculatePathLength(bestMove, coordObj)) {
-    			bestMove = curMove;
-    		}
+    	ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(arrLegalMoves));
+    	//checking if the pathMoves is empty
+    	if(pathMoves.size()>0) {
+    		SaboteurMove bestMove = pathMoves.get(0);
+        	
+        	// curate the move with the best heuristic
+        	for (SaboteurMove curMove : pathMoves) {
+        		if (calculatePathLength(curMove, coordObj) < calculatePathLength(bestMove, coordObj)) {
+        			bestMove = curMove;
+        		}
+        	}
+        	
+        	return bestMove;
     	}
-    	
-    	return bestMove;
+    	return null;
     }
     
     
@@ -157,6 +161,7 @@ public class MyTools {
     			returnVal.add(moves.get(i));
     		}
     	}
+    	
     	return returnVal;
     }
     
