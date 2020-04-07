@@ -17,15 +17,7 @@ public class RandomSaboteurPlayer extends SaboteurPlayer {
     }
 
     @Override
-    public Move chooseMove(SaboteurBoardState boardState) {
-    	ArrayList<SaboteurMove> returnVal = (ArrayList<SaboteurMove>) MyTools.filterMoves(boardState.getAllLegalMoves()).clone();					//testing purposes
-    	System.out.println("returnVal size = " + returnVal.size());
-    	for(int i=0; i<returnVal.size(); i++){
-    		System.out.println("filtered move: " + returnVal.get(i).toPrettyString());
-    	}
-    		
-    		
-    		
+    public Move chooseMove(SaboteurBoardState boardState) { 		
         System.out.println("random player acting as player number: "+boardState.getTurnPlayer());
         return  boardState.getRandomMove();
     }
