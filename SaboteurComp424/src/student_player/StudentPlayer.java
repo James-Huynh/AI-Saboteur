@@ -3,6 +3,7 @@ package student_player;
 import boardgame.Move;
 
 import Saboteur.SaboteurPlayer;
+
 import Saboteur.SaboteurBoardState;
 
 /** A player file submitted by a student. */
@@ -14,7 +15,7 @@ public class StudentPlayer extends SaboteurPlayer {
      * associate you with your agent. The constructor should do nothing else.
      */
     public StudentPlayer() {
-        super("260738307");
+        super("260802941");
     }
 
     /**
@@ -23,12 +24,9 @@ public class StudentPlayer extends SaboteurPlayer {
      * make decisions.
      */
     public Move chooseMove(SaboteurBoardState boardState) {
-        
-
-        // Is random the best you can do?
-        //Move myMove = MyTools.getInitialGameMove(boardState);
-    	Move myMove = boardState.getRandomMove();
-        // Return your move to be processed by the server.
+        // Move myMove = boardState.getRandomMove();
+    	Move myMove = MyTools.getInitialGameMove(boardState);
+    	
         return myMove;
     }
 }
