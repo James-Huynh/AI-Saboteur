@@ -11,7 +11,7 @@ import java.lang.Math;
 
 public class MyTools {
     
-    // James
+	// James
     /**
      * This method focuses on finding a good move for the initial phase of the game.
      * @param boardState is the boardState of the current turn
@@ -20,7 +20,8 @@ public class MyTools {
     public static Move getInitialGameMove(SaboteurBoardState boardState) {	
     	ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();	
     	int[] chosenObj = targetObjective(boardState);
-    	Move chosenMove = pickTheBestHeuristics(ArrLegalMoves, chosenObj);
+
+    	Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
     	
     	if (chosenMove == null) {
     		// What do we do?
@@ -39,8 +40,8 @@ public class MyTools {
      * @param coordObj is the coordinates in an array format of an objective
      * @return a move according to a heuristic
      */
-    private static Move pickTheBestHeuristics(ArrayList<SaboteurMove> arrLegalMoves, int[] coordObj) {
-    	ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(arrLegalMoves)); //checking if the pathMoves is empty
+    private static Move pickTheBestHeuristics(SaboteurBoardState boardState, ArrayList<SaboteurMove> arrLegalMoves, int[] coordObj) {
+    	ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(boardState, arrLegalMoves)); //checking if the pathMoves is empty
     	int curPathLength = 0;
     	
     	if(pathMoves.size()>0) {
@@ -167,12 +168,12 @@ public class MyTools {
      * @param moves = returned ArrayList of all possible moves from the getAllLegalMoves method
      * @return ArrayList of only tile moves filtered from the input of all possible moves
      */
-    public static ArrayList<SaboteurMove> getPathMoves(ArrayList<SaboteurMove> moves) {
+    public static ArrayList<SaboteurMove> getPathMoves(SaboteurBoardState boardState, ArrayList<SaboteurMove> moves) {
     	ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
     	int moves_size = moves.size();
     	
     	for(int i=0; i < moves_size; i++) {
-    		if(moves.get(i).getCardPlayed().getName().matches("Tile(.*)")) {
+    		if(moves.get(i).getCardPlayed().getName().matches("Tile(.*)") && !(isFakePath(boardState, moves.get(i)))) {
     			returnVal.add(moves.get(i));
     		}
     	}
@@ -213,16 +214,16 @@ public class MyTools {
     private static ArrayList<SaboteurMove> filterMoves(ArrayList<SaboteurMove> moves){
     	ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
     	for(int i=0; i < moves.size(); i++){
-    		if(SaboteurTile.class.isInstance(moves.get(i).getCardPlayed())){
-    			if(isDeadEnd((SaboteurTile)moves.get(i).getCardPlayed()) == false){
-        			returnVal.add(moves.get(i));
-        		}
+    		if(isDeadEnd((SaboteurTile)moves.get(i).getCardPlayed()) == false){
+    			System.out.println("this card passed filterMoves: " + moves.get(i).getCardPlayed().getName());
+    			returnVal.add(moves.get(i));
     		}
     	}
     	return returnVal;
     }
     
     
+
     
     // James
     /**
@@ -282,4 +283,54 @@ public class MyTools {
     
     
     
+    /**
+     * checks for an existence of a dead end card in the surrounding 8 tiles around the passed saboteurMove's coordinate
+     * @param boardState current instance of SaboteurBoardState
+     * @param move instance of a SaboteurMove
+     * @return true if one of the surrounding tiles is a dead end path
+     */
+    private static boolean isFakePath(SaboteurBoardState boardState, SaboteurMove move){
+    	SaboteurTile[][] board =  boardState.getHiddenBoard().clone();
+    	
+    	int[] position = move.getPosPlayed().clone();
+        int x = position[0];
+        int y = position[1];
+        boolean retVal = false;
+        int i = x;
+        int j = y+1;
+        if(i<14 && i>=0 && j<14 && j>=0 && board[i][j] != null){
+        	String tileIdx = board[i][j].getIdx();
+			if(tileIdx.equals("1") || tileIdx.equals("2") || tileIdx.equals("2_flip") || tileIdx.equals("3") || tileIdx.equals("3_flip") || tileIdx.equals("4") || tileIdx.equals("4_flip") || tileIdx.equals("11") || tileIdx.equals("11_flip") || tileIdx.equals("12") || tileIdx.equals("12_flip") || tileIdx.equals("13") || tileIdx.equals("13_flip") || tileIdx.equals("14") || tileIdx.equals("14_flip") || tileIdx.equals("15") || tileIdx.equals("15_flip")){
+				retVal = true;
+	    	}
+        }
+        i=x+1;
+        j=y;
+        if(i<14 && i>=0 && j<14 && j>=0 && board[i][j] != null){
+        	String tileIdx = board[i][j].getIdx();
+			if(tileIdx.equals("1") || tileIdx.equals("2") || tileIdx.equals("2_flip") || tileIdx.equals("3") || tileIdx.equals("3_flip") || tileIdx.equals("4") || tileIdx.equals("4_flip") || tileIdx.equals("11") || tileIdx.equals("11_flip") || tileIdx.equals("12") || tileIdx.equals("12_flip") || tileIdx.equals("13") || tileIdx.equals("13_flip") || tileIdx.equals("14") || tileIdx.equals("14_flip") || tileIdx.equals("15") || tileIdx.equals("15_flip")){
+				retVal = true;
+	    	}
+        }
+       i=x;
+       j=y-1;
+       if(i<14 && i>=0 && j<14 && j>=0 && board[i][j] != null){
+       	String tileIdx = board[i][j].getIdx();
+			if(tileIdx.equals("1") || tileIdx.equals("2") || tileIdx.equals("2_flip") || tileIdx.equals("3") || tileIdx.equals("3_flip") || tileIdx.equals("4") || tileIdx.equals("4_flip") || tileIdx.equals("11") || tileIdx.equals("11_flip") || tileIdx.equals("12") || tileIdx.equals("12_flip") || tileIdx.equals("13") || tileIdx.equals("13_flip") || tileIdx.equals("14") || tileIdx.equals("14_flip") || tileIdx.equals("15") || tileIdx.equals("15_flip")){
+				retVal = true;
+	    	}
+       }
+       i=x-1;
+       j=y;
+       if(i<14 && i>=0 && j<14 && j>=0 && board[i][j] != null){
+          	String tileIdx = board[i][j].getIdx();
+   			if(tileIdx.equals("1") || tileIdx.equals("2") || tileIdx.equals("2_flip") || tileIdx.equals("3") || tileIdx.equals("3_flip") || tileIdx.equals("4") || tileIdx.equals("4_flip") || tileIdx.equals("11") || tileIdx.equals("11_flip") || tileIdx.equals("12") || tileIdx.equals("12_flip") || tileIdx.equals("13") || tileIdx.equals("13_flip") || tileIdx.equals("14") || tileIdx.equals("14_flip") || tileIdx.equals("15") || tileIdx.equals("15_flip")){
+   				retVal = true;
+   	    	}
+       }
+    	return retVal;
+    }
+    
+    
 }
+
