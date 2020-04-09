@@ -19,6 +19,13 @@ public class MyTools {
 	 * @return a move
 	 */
 	public static Move getInitialGameMove(SaboteurBoardState boardState) {
+		ArrayList array = boardState.getCurrentPlayerCards();
+		for(int i = 0; i < array.size(); i++) {
+			System.out.println(array.get(i));
+		}
+		
+		
+		
 		ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
 		int[] chosenObj = targetObjective(boardState);
 
