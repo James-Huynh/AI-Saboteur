@@ -8,6 +8,7 @@ import Saboteur.cardClasses.SaboteurCard;
 import Saboteur.cardClasses.SaboteurTile;
 import boardgame.Move;
 import java.lang.Math;
+import java.util.Random;
 
 public class MyTools {
     
@@ -20,12 +21,23 @@ public class MyTools {
     public static Move getInitialGameMove(SaboteurBoardState boardState) {	
     	ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();	
     	int[] chosenObj = targetObjective(boardState);
+
     	Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
     	
     	if (chosenMove == null) {
     		// What do we do?
-    		System.out.println("playing random move due to empty chosenMove!!!!");
-    		chosenMove = boardState.getRandomMove();
+    		ArrayList<SaboteurMove> alternateMoves = filterGoodAlternateMoves(boardState);
+    		
+    		//checking for the case where alternateMoves is empty
+    		if(alternateMoves.size() == 0){
+    			System.out.println("returning a random move because alternate was empty!");
+    			return boardState.getRandomMove();
+    		}
+    		
+    		//generating random number
+    		Random rand = new Random();
+    		int randInt = rand.nextInt(alternateMoves.size());
+    		return alternateMoves.get(randInt);
     	}
     	
     	return chosenMove;
@@ -215,13 +227,14 @@ public class MyTools {
     	ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
     	for(int i=0; i < moves.size(); i++){
     		if(isDeadEnd((SaboteurTile)moves.get(i).getCardPlayed()) == false){
-    			System.out.println("this card passed filterMoves: " + moves.get(i).getCardPlayed().getName());
     			returnVal.add(moves.get(i));
     		}
     	}
     	return returnVal;
     }
     
+    
+
     
     // James
     /**
@@ -279,6 +292,8 @@ public class MyTools {
     }
     
     
+    
+    
     /**
      * checks for an existence of a dead end card in the surrounding 8 tiles around the passed saboteurMove's coordinate
      * @param boardState current instance of SaboteurBoardState
@@ -324,6 +339,51 @@ public class MyTools {
    				retVal = true;
    	    	}
        }
+    	return retVal;
+    }
+    
+    
+    /** filters out good alternate moves in the worst case scenario
+     * @param boardState
+     * @return
+     */
+    private static ArrayList<SaboteurMove> filterGoodAlternateMoves(SaboteurBoardState boardState){
+    	ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();	
+    	ArrayList<SaboteurCard> playerHand = boardState.getCurrentPlayerCards();
+    	ArrayList<SaboteurMove> retVal = new ArrayList<SaboteurMove>();
+    	
+    	//tester printer for playerHand
+    	for(int i=0; i<playerHand.size(); i++){
+    		System.out.println("hand index: " + i + " Card: " + playerHand.get(i).getName());
+    	}
+    	
+    	//adding drop moves with deadend tiles
+    	//assumption: the player hand index matches
+    	for(int i=0; i<legalMoves.size(); i++){
+    		int[] dropIndex = legalMoves.get(i).getPosPlayed(); 
+    		if(legalMoves.get(i).getCardPlayed().getName().matches("Drop")){
+    			System.out.println("Drop move: " + legalMoves.get(i).getPosPlayed()[0]);
+    			if(playerHand.get(dropIndex[0]) instanceof SaboteurTile){
+    				if(isDeadEnd((SaboteurTile)playerHand.get(dropIndex[0]))){
+        				retVal.add(legalMoves.get(i));
+        			}
+    			}
+    		}
+    	}
+    	
+    	//adding Malus moves
+    	for(int i=0; i<legalMoves.size(); i++){
+    		if(legalMoves.get(i).getCardPlayed().getName().matches("Malus")){
+    			retVal.add(legalMoves.get(i));
+    		}
+    	}
+    	
+    	//test printer
+    	System.out.println("filterGoodAlternate retVal size: " + retVal.size());
+    	for(int i=0; i<retVal.size(); i++){
+    		System.out.println(retVal.get(i).getCardPlayed().getName() + " " + retVal.get(i).getPosPlayed()[0]);
+    	}
+    	
     	return retVal;
     }
     
