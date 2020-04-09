@@ -18,14 +18,7 @@ public class MyTools {
 	 * @param boardState is the boardState of the current turn
 	 * @return a move
 	 */
-	public static Move getInitialGameMove(SaboteurBoardState boardState) {
-		ArrayList array = boardState.getCurrentPlayerCards();
-		for(int i = 0; i < array.size(); i++) {
-			System.out.println(array.get(i));
-		}
-		
-		
-		
+	public static Move getInitialGameMove(SaboteurBoardState boardState) {		
 		ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
 		int[] chosenObj = targetObjective(boardState);
 
