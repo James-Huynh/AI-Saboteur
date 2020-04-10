@@ -11,6 +11,7 @@ import java.lang.Math;
 import java.util.Random;
 
 public class MyTools {
+	private static double decay  = 0.5;
 
 	// James
 	/**
@@ -20,6 +21,7 @@ public class MyTools {
 	 * @return a move
 	 */
 	public static Move getInitialGameMove(SaboteurBoardState boardState) {
+		
 		ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
 		int[] chosenObj = targetObjective(boardState);
 
@@ -34,6 +36,16 @@ public class MyTools {
 		Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
 
 		if (chosenMove == null) {
+			
+			//check if agent should drop a card
+			if( Math.random() < decay) {
+				for (SaboteurMove move : ArrLegalMoves) {
+					if (move.getCardPlayed().getName().matches("Drop") && (move.getPosPlayed()[0] == 0)) {
+						return move;
+					}
+				}
+			} 
+			
 			ArrayList<SaboteurMove> alternateMoves = filterGoodAlternateMoves(boardState);
 
 			// checking for the case where alternateMoves is empty
@@ -47,6 +59,7 @@ public class MyTools {
 			return alternateMoves.get(randInt);
 		}
 
+		decay  += 0.01;
 		return chosenMove;
 	}
 
