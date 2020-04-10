@@ -29,4 +29,10 @@ public class StudentPlayer extends SaboteurPlayer {
     	
         return myMove;
     }
+    
+    /*
+     * Server: java -cp bin boardgame.Server -p 8123 - - 300000
+     * Player (client): java -cp bin boardgame.Client student_player.StudentPlayer
+     * Autoplay: java -cp bin autoplay.Autoplay 100
+     */
 }
