@@ -23,11 +23,13 @@ public class MyTools {
 		ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
 		int[] chosenObj = targetObjective(boardState);
 		
-		for(int i=0; i < ArrLegalMoves.size(); i++){
-			if(ArrLegalMoves.get(i).getCardPlayed().getName().matches("Map") && !(isNuggetRevealed(boardState))){
-				return ArrLegalMoves.get(i);
+		if(!(isNuggetRevealed(boardState))){
+			for(int i=0; i < ArrLegalMoves.size(); i++){
+				if(ArrLegalMoves.get(i).getCardPlayed().getName().matches("Map")){
+					return ArrLegalMoves.get(i);
+				}
 			}
-		}
+		}		
 		
     	Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
     	
@@ -38,7 +40,6 @@ public class MyTools {
     		
     		//checking for the case where alternateMoves is empty
     		if(alternateMoves.size() == 0){
-    			System.out.println("returning a random move because alternate was empty!");
     			return boardState.getRandomMove();
     		}
     		
@@ -383,11 +384,6 @@ public class MyTools {
     	ArrayList<SaboteurCard> playerHand = boardState.getCurrentPlayerCards();
     	ArrayList<SaboteurMove> retVal = new ArrayList<SaboteurMove>();
     	
-    	//tester printer for playerHand
-    	System.out.println("Player's turn with the hand of god: " + boardState.getTurnPlayer());
-    	for(int i=0; i<playerHand.size(); i++){
-    		System.out.println("hand index: " + i + " Card: " + playerHand.get(i).getName());
-    	}
     	
     	//adding drop moves with deadend tiles
     	//assumption: the player hand index matches
@@ -410,12 +406,6 @@ public class MyTools {
     		if(legalMoves.get(i).getCardPlayed().getName().matches("Malus")){
     			retVal.add(legalMoves.get(i));
     		}
-    	}
-    	
-    	//test printer
-    	System.out.println("filterGoodAlternate retVal size: " + retVal.size());
-    	for(int i=0; i<retVal.size(); i++){
-    		System.out.println(retVal.get(i).getCardPlayed().getName() + " " + retVal.get(i).getPosPlayed()[0]);
     	}
     	
     	return retVal;
