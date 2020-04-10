@@ -385,6 +385,7 @@ public class MyTools {
     	
     	//adding drop moves with deadend tiles
     	//assumption: the player hand index matches
+    	/*
     	for(int i=0; i<legalMoves.size(); i++){
     		int[] dropIndex = legalMoves.get(i).getPosPlayed(); 
     		if(legalMoves.get(i).getCardPlayed().getName().matches("Drop")){
@@ -396,6 +397,7 @@ public class MyTools {
     			}
     		}
     	}
+    	*/
     	
     	//adding Malus moves
     	for(int i=0; i<legalMoves.size(); i++){
