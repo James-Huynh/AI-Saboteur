@@ -121,7 +121,7 @@ public class MyTools {
 		// check for the nugget
 		for (SaboteurTile tile : objectives) {
 			if (isNugget(tile)) {
-				return (new int[] { coordObjs[0][i], coordObjs[1][i] });
+				return (new int[] { coordObjs[i][0], coordObjs[i][1] });
 			}
 			i++;
 		}
