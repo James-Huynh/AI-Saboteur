@@ -19,39 +19,37 @@ public class MyTools {
 	 * @param boardState is the boardState of the current turn
 	 * @return a move
 	 */
-	public static Move getInitialGameMove(SaboteurBoardState boardState) {		
+	public static Move getInitialGameMove(SaboteurBoardState boardState) {
 		ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
 		int[] chosenObj = targetObjective(boardState);
-		
-		if(!(isNuggetRevealed(boardState))){
-			for(int i=0; i < ArrLegalMoves.size(); i++){
-				if(ArrLegalMoves.get(i).getCardPlayed().getName().matches("Map")){
+
+		if (!(isNuggetRevealed(boardState))) {
+			for (int i = 0; i < ArrLegalMoves.size(); i++) {
+				if (ArrLegalMoves.get(i).getCardPlayed().getName().matches("Map")) {
 					return ArrLegalMoves.get(i);
 				}
 			}
-		}		
-		
-    	Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
-    	
-    	if (chosenMove == null) {
-    		// What do we do?
+		}
 
-    		ArrayList<SaboteurMove> alternateMoves = filterGoodAlternateMoves(boardState);
-    		
-    		//checking for the case where alternateMoves is empty
-    		if(alternateMoves.size() == 0){
-    			return boardState.getRandomMove();
-    		}
-    		
-    		//generating random number
-    		Random rand = new Random();
-    		int randInt = rand.nextInt(alternateMoves.size());
-    		return alternateMoves.get(randInt);
-    	}
-    	
-    	return chosenMove;
-    }
- 
+		Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
+
+		if (chosenMove == null) {
+			ArrayList<SaboteurMove> alternateMoves = filterGoodAlternateMoves(boardState);
+
+			// checking for the case where alternateMoves is empty
+			if (alternateMoves.size() == 0) {
+				return boardState.getRandomMove();
+			}
+
+			// generating random number
+			Random rand = new Random();
+			int randInt = rand.nextInt(alternateMoves.size());
+			return alternateMoves.get(randInt);
+		}
+
+		return chosenMove;
+	}
+
 	// James
 	/**
 	 * Given a collection of moves, the methods picks the best move according a
@@ -65,7 +63,9 @@ public class MyTools {
 	 */
 	private static Move pickTheBestHeuristics(SaboteurBoardState boardState, ArrayList<SaboteurMove> arrLegalMoves,
 			int[] coordObj) {
-		ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(boardState, arrLegalMoves)); // checking if thepathMoves is empty
+		ArrayList<SaboteurMove> pathMoves = filterMoves(getPathMoves(boardState, arrLegalMoves)); // checking if
+																									// thepathMoves is
+																									// empty
 		int curPathLength = 0;
 
 		if (pathMoves.size() > 0) {
@@ -185,64 +185,76 @@ public class MyTools {
 		}
 	}
 
-    /**
-     * @param moves = returned ArrayList of all possible moves from the getAllLegalMoves method
-     * @return ArrayList of only tile moves filtered from the input of all possible moves
-     */
-    public static ArrayList<SaboteurMove> getPathMoves(SaboteurBoardState boardState, ArrayList<SaboteurMove> moves) {
-    	ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
-    	int moves_size = moves.size();
-    	
-    	for(int i=0; i < moves_size; i++) {
-    		if(moves.get(i).getCardPlayed().getName().matches("Tile(.*)") && !(isFakePath(boardState, moves.get(i)))) {
-    			returnVal.add(moves.get(i));
-    		}
-    	}
-    	
-    	return returnVal;
-    }
-    
-    
-    /**
-     * @param move = an instance of SaboteurMove
-     * @param objective = the coordinates of the objective
-     * @return the sum of delta x and y
-     */
-    public static int calculatePathLength(SaboteurMove move, int[] objective){
-    	int[] val = move.getPosPlayed().clone();
-    	int retVal = Math.abs(val[0] - objective[0]) +  Math.abs(val[1] - objective[1]);
-    	
-    	return retVal;
-    }
-    
-    /**
-     * returns true for dead-end tile card and returns false if not 
-     * @param tile - an instance of SaboteurTile
-     * @return a boolean value corresponding to whether the tile is a dead-end or not
-     */
-    private static boolean isDeadEnd(SaboteurTile tile){
-    	String tileIdx = tile.getIdx();
-    	if(tileIdx.equals("1") || tileIdx.equals("2") || tileIdx.equals("2_flip") || tileIdx.equals("3") || tileIdx.equals("3_flip") || tileIdx.equals("4") || tileIdx.equals("4_flip") || tileIdx.equals("11") || tileIdx.equals("11_flip") || tileIdx.equals("12") || tileIdx.equals("12_flip") || tileIdx.equals("13") || tileIdx.equals("13_flip") || tileIdx.equals("14") || tileIdx.equals("14_flip") || tileIdx.equals("15") || tileIdx.equals("15_flip")){
-    		return true;
-    	}else return false;    	
-    }
-    
-    /**
-     * filter out the moves that are using the dead-end cards
-     * @param moves - ArrayList of moves
-     * @return ArrayList of moves that don't use dead-end cards
-     */
-    private static ArrayList<SaboteurMove> filterMoves(ArrayList<SaboteurMove> moves){
-    	ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
-    	for(int i=0; i < moves.size(); i++){
-    		if(isDeadEnd((SaboteurTile)moves.get(i).getCardPlayed()) == false){
-    			returnVal.add(moves.get(i));
-    		}
-    	}
-    	return returnVal;
-    }
-   
-    
+	// Tugu
+	/**
+	 * @param moves = returned ArrayList of all possible moves from the
+	 *              getAllLegalMoves method
+	 * @return ArrayList of only tile moves filtered from the input of all possible
+	 *         moves
+	 */
+	public static ArrayList<SaboteurMove> getPathMoves(SaboteurBoardState boardState, ArrayList<SaboteurMove> moves) {
+		ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
+		int moves_size = moves.size();
+
+		for (int i = 0; i < moves_size; i++) {
+			if (moves.get(i).getCardPlayed().getName().matches("Tile(.*)") && !(isFakePath(boardState, moves.get(i)))) {
+				returnVal.add(moves.get(i));
+			}
+		}
+
+		return returnVal;
+	}
+
+	// Tugu
+	/**
+	 * @param move      = an instance of SaboteurMove
+	 * @param objective = the coordinates of the objective
+	 * @return the sum of delta x and y
+	 */
+	public static int calculatePathLength(SaboteurMove move, int[] objective) {
+		int[] val = move.getPosPlayed().clone();
+		int retVal = Math.abs(val[0] - objective[0]) + Math.abs(val[1] - objective[1]);
+
+		return retVal;
+	}
+
+	// Tugu
+	/**
+	 * returns true for dead-end tile card and returns false if not
+	 * 
+	 * @param tile - an instance of SaboteurTile
+	 * @return a boolean value corresponding to whether the tile is a dead-end or
+	 *         not
+	 */
+	private static boolean isDeadEnd(SaboteurTile tile) {
+		String tileIdx = tile.getIdx();
+		if (tileIdx.equals("1") || tileIdx.equals("2") || tileIdx.equals("2_flip") || tileIdx.equals("3")
+				|| tileIdx.equals("3_flip") || tileIdx.equals("4") || tileIdx.equals("4_flip") || tileIdx.equals("11")
+				|| tileIdx.equals("11_flip") || tileIdx.equals("12") || tileIdx.equals("12_flip")
+				|| tileIdx.equals("13") || tileIdx.equals("13_flip") || tileIdx.equals("14")
+				|| tileIdx.equals("14_flip") || tileIdx.equals("15") || tileIdx.equals("15_flip")) {
+			return true;
+		} else
+			return false;
+	}
+
+	// Tugu
+	/**
+	 * filter out the moves that are using the dead-end cards
+	 * 
+	 * @param moves - ArrayList of moves
+	 * @return ArrayList of moves that don't use dead-end cards
+	 */
+	private static ArrayList<SaboteurMove> filterMoves(ArrayList<SaboteurMove> moves) {
+		ArrayList<SaboteurMove> returnVal = new ArrayList<SaboteurMove>();
+		for (int i = 0; i < moves.size(); i++) {
+			if (isDeadEnd((SaboteurTile) moves.get(i).getCardPlayed()) == false) {
+				returnVal.add(moves.get(i));
+			}
+		}
+		return returnVal;
+	}
+
 	// James
 	/**
 	 * Verify if the given move creates a valid path to the specified coordinates
@@ -375,43 +387,47 @@ public class MyTools {
 		return retVal;
 	}
 
-    /** filters out good alternate moves in the worst case scenario
-     * @param boardState
-     * @return arraylist of possible alternate moves
-     */
-    private static ArrayList<SaboteurMove> filterGoodAlternateMoves(SaboteurBoardState boardState){
-    	ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();	
-    	ArrayList<SaboteurCard> playerHand = boardState.getCurrentPlayerCards();
-    	ArrayList<SaboteurMove> retVal = new ArrayList<SaboteurMove>();
-    	
-    	
-    	//adding drop moves with deadend tiles
-    	//assumption: the player hand index matches
-    	/*
-    	for(int i=0; i<legalMoves.size(); i++){
-    		int[] dropIndex = legalMoves.get(i).getPosPlayed(); 
-    		if(legalMoves.get(i).getCardPlayed().getName().matches("Drop")){
-    			System.out.println("Drop move: " + legalMoves.get(i).getPosPlayed()[0]);
-    			if(playerHand.get(dropIndex[0]) instanceof SaboteurTile){
-    				if(isDeadEnd((SaboteurTile)playerHand.get(dropIndex[0]))){
-        				retVal.add(legalMoves.get(i));
-        			}
-    			}
-    		}
-    	}
-    	*/
-    	
-    	//adding Malus moves
-    	for(int i=0; i<legalMoves.size(); i++){
-    		if(legalMoves.get(i).getCardPlayed().getName().matches("Malus")){
-    			retVal.add(legalMoves.get(i));
-    		}
-    	}
-    	
-    	return retVal;
-    }
-    
+	// Tugu
+	/**
+	 * filters out good alternate moves in the worst case scenario
+	 * 
+	 * @param boardState
+	 * @return arraylist of possible alternate moves
+	 */
+	private static ArrayList<SaboteurMove> filterGoodAlternateMoves(SaboteurBoardState boardState) {
+		ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
+		ArrayList<SaboteurCard> playerHand = boardState.getCurrentPlayerCards();
+		ArrayList<SaboteurMove> retVal = new ArrayList<SaboteurMove>();
 
+		// adding drop moves with deadend tiles
+		// assumption: the player hand index matches
+		/*
+		 * for(int i=0; i<legalMoves.size(); i++){ int[] dropIndex =
+		 * legalMoves.get(i).getPosPlayed();
+		 * if(legalMoves.get(i).getCardPlayed().getName().matches("Drop")){
+		 * System.out.println("Drop move: " + legalMoves.get(i).getPosPlayed()[0]);
+		 * if(playerHand.get(dropIndex[0]) instanceof SaboteurTile){
+		 * if(isDeadEnd((SaboteurTile)playerHand.get(dropIndex[0]))){
+		 * retVal.add(legalMoves.get(i)); } } } }
+		 */
+
+		// adding Malus moves
+		for (int i = 0; i < legalMoves.size(); i++) {
+			if (legalMoves.get(i).getCardPlayed().getName().matches("Malus")) {
+				retVal.add(legalMoves.get(i));
+			}
+		}
+
+		return retVal;
+	}
+
+	// James
+	/**
+	 * This method check if the nugget is revealed at the moment.
+	 * 
+	 * @param boardState The boardstate
+	 * @return A boolean
+	 */
 	private static boolean isNuggetRevealed(SaboteurBoardState boardState) {
 		SaboteurTile[][] hiddenBoard = boardState.getHiddenBoard();
 		int[][] coordObjs = SaboteurBoardState.hiddenPos.clone();
@@ -426,7 +442,6 @@ public class MyTools {
 				return true;
 			}
 		}
-		
 
 		return false;
 	}
