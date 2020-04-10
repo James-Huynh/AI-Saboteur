@@ -23,6 +23,12 @@ public class MyTools {
 		ArrayList<SaboteurMove> ArrLegalMoves = boardState.getAllLegalMoves();
 		int[] chosenObj = targetObjective(boardState);
 		
+		for(int i=0; i < ArrLegalMoves.size(); i++){
+			if(ArrLegalMoves.get(i).getCardPlayed().getName().matches("Map") && !(isNuggetRevealed(boardState))){
+				return ArrLegalMoves.get(i);
+			}
+		}
+		
     	Move chosenMove = pickTheBestHeuristics(boardState, ArrLegalMoves, chosenObj);
     	
     	if (chosenMove == null) {
@@ -416,7 +422,7 @@ public class MyTools {
     }
     
 
-	private boolean isNuggetRevealed(SaboteurBoardState boardState) {
+	private static boolean isNuggetRevealed(SaboteurBoardState boardState) {
 		SaboteurTile[][] hiddenBoard = boardState.getHiddenBoard();
 		int[][] coordObjs = SaboteurBoardState.hiddenPos.clone();
 		int[] coordObj1 = { coordObjs[0][0], coordObjs[0][1] };
